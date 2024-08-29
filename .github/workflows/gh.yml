@@ -1,0 +1,57 @@
+name: GitHub Actions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Affected on !main
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: git branch --track main origin/main
+
+      - name: Affected on main
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          echo "NX_HEAD=origin/main" >> $GITHUB_ENV
+          echo "NX_BASE=origin/main~1" >> $GITHUB_ENV
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Lint, test, build
+        run: bun nx affected -t lint test build
+
+      - name: Start all apps
+        run: nohup bun nx run-many -t serve dev &
+
+      - name: Install playwright
+        run: bunx playwright install
+
+      - name: Run e2e
+        run: bun nx affected -t e2e
+
+      - name: Stop all apps
+        if: always()
+        run: |
+          kill -9 $(lsof -ti tcp:3000) || true
+          kill -9 $(lsof -ti tcp:4200) || true

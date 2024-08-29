@@ -1,0 +1,55 @@
+{
+  "name": "react-frontend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/react-frontend/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/rspack:rspack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "web",
+        "outputPath": "dist/apps/react-frontend",
+        "main": "apps/react-frontend/src/main.tsx",
+        "tsConfig": "apps/react-frontend/tsconfig.app.json",
+        "rspackConfig": "apps/react-frontend/rspack.config.js",
+        "assets": [
+          "apps/react-frontend/src/favicon.ico",
+          "apps/react-frontend/src/assets"
+        ]
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production",
+          "optimization": true,
+          "sourceMap": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/rspack:dev-server",
+      "options": {
+        "buildTarget": "react-frontend:build:development"
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "buildTarget": "react-frontend:build:production"
+        }
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "react-frontend:build",
+        "spa": true
+      }
+    }
+  }
+}
