@@ -76,7 +76,7 @@
         "babel": true,
         "style": "tailwind",
         "linter": "eslint",
-        "bundler": "rspack"
+        "bundler": "vite"
       },
       "component": {
         "style": "tailwind"

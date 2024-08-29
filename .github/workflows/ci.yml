@@ -25,7 +25,11 @@ jobs:
       # This enables task distribution via Nx Cloud
       # Run this command as early as possible, before dependencies are installed
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      - run: bunx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      - run: bunx nx-cloud start-ci-run --distribute-on="3 bun-agent" --stop-agents-after="e2e-ci"
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - run: bun install --no-cache
       - uses: nrwl/nx-set-shas@v4
@@ -33,5 +37,5 @@ jobs:
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: bun nx-cloud record -- echo Hello World
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
-      - name: Lint, test, build
+      - name: Lint, test, build, e2e
         run: bun nx affected -t lint test build e2e-ci
