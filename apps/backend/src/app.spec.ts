@@ -5,7 +5,7 @@ describe('GET /', () => {
   it('responds with a JSON message', async () => {
     const response = await request(app).get('/');
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ message: 'Hello API' });
+    expect(response.body).toEqual({ message: 'Hi API' });
   });
 
   it('responds with 404 for non-existing route', async () => {
